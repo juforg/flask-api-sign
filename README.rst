@@ -6,7 +6,7 @@ Flask Api Sign Verification
    :target: https://flask-api-sign.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://github.com/juforg/flask-api-sign/actions/workflows/publish-to-test-pypi.yml/badge.svg
+.. image:: https://github.com/juforg/flask-api-sign/actions/workflows/publish-to-pypi.yml/badge.svg
    :target: https://github.com/juforg/flask-api-sign/actions/workflows/publish-to-pypi.yml
    :alt: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
 
