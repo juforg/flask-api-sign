@@ -57,10 +57,11 @@ def verify_sign_in_request():
         api_sign = _get_sign_params_from_request()
         _check_req_timestamp(api_sign.timestamp)
         _check_request_id(api_sign.request_id)
-        # if config.require_token:
-        #     _check_access_token(api_sign.signature)
+        if config.require_token:
+            _check_access_token(api_sign.signature)
         _check_app_id(api_sign.app_id)
         signature = utils.signature(api_sign)
+        logger.debug(f"signature:{signature}")
         if signature != api_sign.signature:
             logger.exception('invalid request signature')
             raise InvalidSignError('invalid request signature')

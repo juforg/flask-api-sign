@@ -104,7 +104,7 @@ class _Config(object):
 
     @property
     def app_ids(self):
-        return current_app.config.get('SIGN_APP_IDS')
+        return current_app.config.get('SIGN_APP_IDS', {'testapp': 'testsecret'})
 
     @property
     def cust_check_app_id_func(self):

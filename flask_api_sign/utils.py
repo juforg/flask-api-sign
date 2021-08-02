@@ -21,8 +21,8 @@ from flask_api_sign.api_sign_manager import ApiSign
 import base64
 
 
-def _md5(pwd):
-    return hashlib.md5(pwd).hexdigest()
+def _md5(data):
+    return hashlib.md5(data).hexdigest()
 
 
 def _get_apisign_manager():
@@ -34,10 +34,16 @@ def _get_apisign_manager():
 
 
 def sign(sign_data: str):
-    return _md5(sign_data.encode('utf-8')).upper()
+    """
+    获取签名
+    """
+    return _md5(sign_data.encode('utf-8'))
 
 
 def signature(api_sign: ApiSign):
+    """
+    整理参数获取签名 md5
+    """
     apisign_manager = _get_apisign_manager()
     sorted_params = sorted(api_sign.dict().items(), key=lambda param_list: param_list[0])
     query_str = ''
