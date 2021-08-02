@@ -47,12 +47,12 @@ class _Config(object):
 
     @property
     def sign_location(self):
-        locations = current_app.config.get('SIGN_LOCATION', 'query_string')
-        for location in locations:
-            if location not in ('headers', 'query_string', 'json'):
-                raise RuntimeError('SIGN_LOCATION can only contain '
-                                   '"headers", "query_string", or "json"')
-        return locations
+        location = current_app.config.get('SIGN_LOCATION', 'headers')
+
+        if location not in ('headers', 'query_string', 'form', 'json'):
+            raise RuntimeError('SIGN_LOCATION can only contain: '
+                               'headers, query_string, form or json')
+        return location
 
     @property
     def timestamp_expiration(self):

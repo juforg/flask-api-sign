@@ -15,6 +15,7 @@
 #
 
 import datetime
+import logging
 import time
 from functools import wraps
 from flask import request
@@ -25,6 +26,8 @@ from flask_api_sign.api_sign_manager import ApiSign
 from flask_api_sign.config import config
 from flask_api_sign.exceptions import NoSignKeyError, InvalidSignError, NoAppIdError, NoRequestIdError, NoSignatureError, NoTimestampError, TimestampFormatterError, \
     RequestExpiredError
+
+logger = logging.getLogger(__name__)
 
 
 def verify_sign(fn):
@@ -59,6 +62,7 @@ def verify_sign_in_request():
         _check_app_id(api_sign.app_id)
         signature = utils.signature(api_sign)
         if signature != api_sign.signature:
+            logger.exception('invalid request signature')
             raise InvalidSignError('invalid request signature')
 
 
@@ -111,9 +115,16 @@ def _get_sign_params_from_headers():
     api_sign.request_id = request.headers.get(config.request_id, None)
     api_sign.signature = request.headers.get(config.signature, None)
     api_sign.timestamp = request.headers.get(config.timestamp, None)
-    api_sign.other_params = request.headers.get(config.data_key, None)
-    if api_sign.other_params is None and request.json is not None:
-        api_sign.other_params = request.json.get(config.data_key, None)
+    api_sign.other_params = request.headers.get(config.data_key, None) or request.args.get(config.data_key, None)
+    content_type = request.headers.get('CONTENT_TYPE', None)
+    if api_sign.other_params is None:
+        if content_type == "application/json" and request.json is not None:
+            api_sign.other_params = utils.base64url_encode(request.get_data())
+        elif content_type.startswith('multipart/form-data') or content_type.startswith("application/x-www-form-urlencoded") and request.form is not None:
+            params = ""
+            for (k, v) in request.form.items():
+                params += f"{k}={v}&"
+            api_sign.other_params = utils.base64url_encode(bytes(params.rstrip("&"), encoding="utf-8"))
     return api_sign
 
 
@@ -185,7 +196,8 @@ def _check_req_timestamp(req_timestamp):
         if timestamp <= now_timestamp <= timestamp + config.timestamp_expiration:
             return True
         else:
-            raise RequestExpiredError(f"request_timestamp:{timestamp},now_timestamp:{now_timestamp},configed_expiration:{config.timestamp_expiration}")
+            logger.warning(f"request_timestamp:{timestamp},now_timestamp:{now_timestamp},configed_expiration:{config.timestamp_expiration}")
+            raise RequestExpiredError(f"request_timestamp:{timestamp},now_timestamp:{now_timestamp}")
     else:
         raise TimestampFormatterError(timestamp)
 

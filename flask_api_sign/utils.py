@@ -33,6 +33,10 @@ def _get_apisign_manager():
                            "application before using this method")
 
 
+def sign(sign_data: str):
+    return _md5(sign_data.encode('utf-8')).upper()
+
+
 def signature(api_sign: ApiSign):
     apisign_manager = _get_apisign_manager()
     sorted_params = sorted(api_sign.dict().items(), key=lambda param_list: param_list[0])
@@ -40,13 +44,13 @@ def signature(api_sign: ApiSign):
     for (k, v) in sorted_params:
         query_str += f"{k}={v}&"
     query_str += apisign_manager.get_and_check_app_secret(api_sign.app_id)
-    sign = _md5(query_str.encode('utf-8')).upper()
-    return sign
+    return sign(query_str)
 
 
 def base64url_decode(input_str):
     return base64.urlsafe_b64decode(input_str)
 
 
-def base64url_encode(input_str):
-    return base64.urlsafe_b64encode(input_str).replace(b'=', b'')
+def base64url_encode(input_data: str):
+    encodedBytes = base64.urlsafe_b64encode(input_data.encode("utf-8") if isinstance(input_data, str) else input_data)
+    return str(encodedBytes, "utf-8")

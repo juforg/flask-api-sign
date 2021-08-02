@@ -58,7 +58,7 @@ class ApiSignManager(object):
 
         @app.errorhandler(RequestExpiredError)
         def handle_error(e):
-            return jsonify({config.error_msg_key: f'request timestamp expired：{e.args}'}), 403
+            return jsonify({config.error_msg_key: f'request timestamp expired：{e.args}'}), 408
 
         @app.errorhandler(SignException)
         def handle_error(e):
