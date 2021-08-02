@@ -18,4 +18,4 @@ from .api_sign_manager import ApiSignManager
 from .view_decorators import verify_sign
 
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'

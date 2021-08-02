@@ -26,7 +26,7 @@ test_requirements = [
 
 setup(
     name='flask_api_sign',
-    version='0.1.0',
+    version='0.1.1',
     description="Flask extension of Api sign Verification",
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
